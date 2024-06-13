@@ -2,7 +2,13 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
-import type { Guess, Hint, NumberAnswerCategory } from './types/guess';
+import {
+	isCountriesCategory,
+	isMultiStringCategory,
+	type Guess,
+	type Hint,
+	type NumberAnswerCategory
+} from './types/guess';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -144,7 +150,12 @@ ${guesses
 		return g.categories
 			.map((c) => {
 				if (c.correct) return '🟩';
-				if (c.proximity === 'close') return '🟨';
+				if (
+					c.proximity === 'close' ||
+					((isMultiStringCategory(c) || isCountriesCategory(c)) &&
+						c.value.some((cv) => cv.correct || cv.sameContinent))
+				)
+					return '🟨';
 				return '⬜';
 			})
 			.join('');
