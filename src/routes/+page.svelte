@@ -38,7 +38,7 @@
 			await tick();
 			window.scroll({ top: window.innerHeight, behavior: 'smooth' });
 
-			if (guesses.length > 0 && guesses.length % 3 === 0) {
+			if (guesses.length > 0 && guesses.length % 3 === 0 && !guesses.some((g) => g.correct)) {
 				getHint();
 			}
 		} catch (error) {
