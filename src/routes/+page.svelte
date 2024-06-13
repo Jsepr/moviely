@@ -4,11 +4,16 @@
 	import type { Guess, Hint } from '$lib/types/guess';
 	import { flip } from 'svelte/animate';
 	import { tick } from 'svelte';
+	import { getShareText, localStorageGetItem, localStorageSetItem } from '$lib/utils';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let query = '';
 
-	let guesses: Guess[] = [];
-	let hints: Hint[] = [];
+	/** @type {import('./$types').PageData} */
+	export let data;
+	let guesses: Guess[] = localStorageGetItem({ key: 'moviely-guesses' }) ?? [];
+	let hints: Hint[] = localStorageGetItem({ key: 'moviely-hints' }) ?? [];
 
 	async function onSelect(guessId: string) {
 		query = '';
@@ -27,6 +32,9 @@
 			const guess = (await res.json()) as Guess;
 
 			guesses = [...guesses, guess];
+
+			localStorageSetItem({ key: 'moviely-guesses', value: guesses });
+
 			await tick();
 			window.scroll({ top: window.innerHeight, behavior: 'smooth' });
 
@@ -45,7 +53,6 @@
 	}
 
 	async function getHint() {
-		console.log('getHint');
 		try {
 			const res = await fetch(`/api/hint?numberOfGuesses=${guesses.length}`);
 			if (!res.ok) {
@@ -65,7 +72,7 @@
 		console.log(error);
 	}
 
-	let hasGuessedCorrect = guesses.some((g) => g.correct);
+	$: hasGuessedCorrect = guesses.some((g) => g.correct);
 </script>
 
 <svelte:head>
@@ -96,8 +103,27 @@
 			</div>
 		{/if}
 		{#if !hasGuessedCorrect}
-			<p class="flex justify-end text-xs text-gray-500">Guess number {guesses.length + 1}</p>
+			<p class="flex justify-end text-xs text-gray-500">Guess {guesses.length + 1}</p>
+			<Search bind:query {onSelect} hasGuessedCorrect={guesses.some((g) => g.correct)} />
+		{:else}
+			<div class="flex flex-col align-middle">
+				<h3 class="mb-8 mt-8 text-center">
+					You guessed the correct movie in {guesses.length} guesses!
+				</h3>
+				<Button
+					class="m-auto mb-16"
+					on:click={async () => {
+						try {
+							await navigator.clipboard.writeText(
+								getShareText({ guesses, hints, date: data.date })
+							);
+							toast('Copied result to clipboard');
+						} catch (error) {
+							toast('Could not copy result');
+						}
+					}}>Share your result!</Button
+				>
+			</div>
 		{/if}
-		<Search bind:query {onSelect} hasGuessedCorrect={guesses.some((g) => g.correct)} />
 	</div>
 </section>

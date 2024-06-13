@@ -1,7 +1,10 @@
 <script>
+	import { Toaster } from '$lib/components/ui/sonner';
 	import '../app.css';
 	import './styles.css';
 </script>
+
+<Toaster position="top-center"/>
 
 <div class="app">
 	<main id="main">

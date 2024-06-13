@@ -7,7 +7,6 @@ export async function getTodaysMovie() {
 	const todaysDate = new Date();
 
 	const movie = await kv.get<DetailsResponse>(format(todaysDate, 'yyyy-MM-dd'));
-	console.log('movie: ', movie);
 	if (!movie) throw new Error('No movie found for todays date');
 
 	return movie;

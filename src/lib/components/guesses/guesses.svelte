@@ -34,7 +34,9 @@
 							{#if isCountriesCategory(category)}
 								<div class="flex flex-wrap gap-2">
 									{#each category.value as country}
-										<div class={`rounded-sm flex align-middle ${country.correct ? 'bg-green-400' : ''} p-2`}>
+										<div
+											class={`flex rounded-sm align-middle ${country.correct ? 'bg-green-400' : ''} p-2`}
+										>
 											<img
 												src={`https://flagcdn.com/${country.value.toLowerCase()}.svg`}
 												width="40"
