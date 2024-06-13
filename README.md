@@ -1,15 +1,5 @@
 # moviely
 
-## TODO
+## Description
 
-- Hints feature
-    - Hint button next to search bar
-    - Possible to get 3 hints per day?
-    - Reduce score depending on how many hints used
-    - tagline, poster, director, actors?
-- Save progress in local storage
-  - What to do when new day?
-- Move searchbar to top?
-- Legend for how close you are
-- Request new API key public usage
-- ads?? 
+Moviely is a game where you each day have to guess the correct movie. Start guessing a movie and you will get hints based on the movie you guessed. For example if the movie you guessed has the same director as today's movie, you will see that the director is correct!
