@@ -5,7 +5,7 @@
 
 <Toaster position="top-center" />
 
-<div class="flex h-full flex-col items-center justify-center">
+<div class="flex flex-col items-center justify-center">
 	<div class="max-w-6xl">
 		<img src="/logo-with-text.png" alt="Moviely logo" class="block h-auto max-h-48 w-auto" />
 	</div>
