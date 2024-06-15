@@ -20,7 +20,7 @@
 		<div
 			animate:flip={{ duration: 400 }}
 			transition:fade={{ duration: 400 }}
-			class={`flex  gap-2 rounded-2xl  p-4 ${guess.correct ? 'bg-green-400 shadow-2xl shadow-green-400' : 'bg-gray-300'}`}
+			class={`flex  gap-2 rounded-2xl  p-4 ${guess.correct ? 'bg-green-400 shadow-2xl shadow-green-400' : 'bg-card'}`}
 		>
 			<img src={guess.posterSrc} alt={`poster image`} class="h-36 w-auto" />
 			<div class="flex flex-col">

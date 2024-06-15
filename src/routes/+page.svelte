@@ -80,7 +80,6 @@
 	<meta name="description" content="Movie quiz app" />
 </svelte:head>
 <section class="flex flex-1 flex-col justify-between gap-2 align-middle">
-	<h1 class="mb-10 font-serif">Moviely</h1>
 	<div class="flex flex-shrink-0 flex-grow flex-col justify-end">
 		<Guesses bind:guesses />
 	</div>

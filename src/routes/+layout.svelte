@@ -1,28 +1,21 @@
 <script>
 	import { Toaster } from '$lib/components/ui/sonner';
 	import '../app.css';
-	import './styles.css';
 </script>
 
-<Toaster position="top-center"/>
+<Toaster position="top-center" />
 
-<div class="app">
-	<main id="main">
+<div class="flex h-full flex-col items-center justify-center">
+	<div class="max-w-6xl">
+		<img src="/logo-with-text.png" alt="Moviely logo" class="block h-auto max-h-48 w-auto" />
+	</div>
+	<main id="main" class="flex flex-1 flex-col">
 		<slot></slot>
 	</main>
 </div>
 
 <style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
 	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
 		padding: 1rem;
 		width: 100%;
 		max-width: 64rem;
