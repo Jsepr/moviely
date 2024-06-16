@@ -100,15 +100,15 @@
 			sameWidth
 			align="center"
 			sideOffset={10}
-			class="max-h-96 min-h-64 overflow-auto bg-card p-0"
+			class="h-96 overflow-auto bg-card p-0"
 		>
 			<div class="flex flex-col gap-2">
 				{#if !query}
 					<p class="text-center">Enter a movie title to search</p>
 				{:else if loading}
 					{#each Array(5).fill(0) as _}
-						<div class="flex h-16 items-start gap-2">
-							<Skeleton class="h-full w-10 flex-shrink rounded-sm" />
+						<div class="flex items-start gap-2 p-2">
+							<Skeleton class="h-16 w-10 flex-shrink rounded-sm" />
 							<Skeleton class={`h-4 ${getSkeletonTitleWidth()}`} />
 						</div>
 					{/each}
@@ -122,7 +122,7 @@
 							}}
 							class="flex items-start justify-start gap-2 p-2 hover:bg-slate-100"
 						>
-							<div class="w-10 flex-shrink-0">
+							<div class="w-10 h-16 flex-shrink-0">
 								{#if movie.poster_path}
 									<img
 										use:lazyLoad={`${baseImageUrl}w154${movie.poster_path}`}
@@ -130,7 +130,7 @@
 										class="h-full w-full rounded-sm bg-slate-200 opacity-[0.2] transition-opacity duration-300"
 									/>
 								{:else}
-									<div class="h-16 w-full rounded-sm bg-slate-200"></div>
+									<div class="h-full w-full rounded-sm bg-slate-200"></div>
 								{/if}
 							</div>
 							<span class="text-left">{movie.title}</span>
