@@ -7,6 +7,7 @@
 	import { lazyLoad } from './lazyLoad';
 	import { Skeleton } from '../ui/skeleton';
 	import Input from '../ui/input/input.svelte';
+	import { onMount } from 'svelte';
 
 	type $$Props = { query: string; onSelect: (value: string) => void; hasGuessedCorrect: boolean };
 
@@ -14,11 +15,11 @@
 	export let onSelect: $$Props['onSelect'];
 	export let hasGuessedCorrect: $$Props['hasGuessedCorrect'] = false;
 
+	let input: HTMLInputElement;
 	let loading = false;
 	let movies: SearchMovie[] = [];
 	let timeout: ReturnType<typeof setTimeout>;
 	let popoverOpen = false;
-	let input: HTMLInputElement;
 
 	function handleSearch(query: string) {
 		if (!query) {
@@ -63,15 +64,29 @@
 		return widths[index];
 	}
 
+	onMount(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === ' ') {
+				event.stopPropagation();
+			}
+		};
+
+		input?.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			input?.removeEventListener('keydown', handleKeyDown);
+		};
+	});
+
 	$: query, handleSearch(query);
 </script>
 
 <div class={`w-full`}>
 	<Popover.Root disableFocusTrap bind:open={popoverOpen}>
-		<Popover.Trigger class="w-full" asChild let:builder>
+		<Popover.Trigger class="w-full" asChild role="textbox" let:builder>
 			<Input
-				builders={[builder]}
 				ref={input}
+				builders={[builder]}
 				bind:value={query}
 				disabled={hasGuessedCorrect}
 				placeholder={hasGuessedCorrect
@@ -85,11 +100,11 @@
 			sameWidth
 			align="center"
 			sideOffset={10}
-			class="max-h-96 min-h-64 overflow-auto bg-card p-2"
+			class="max-h-96 min-h-64 overflow-auto bg-card p-0"
 		>
-			<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-2">
 				{#if !query}
-					<p class="text-center">Try any movie</p>
+					<p class="text-center">Enter a movie title to search</p>
 				{:else if loading}
 					{#each Array(5).fill(0) as _}
 						<div class="flex h-16 items-start gap-2">
@@ -105,17 +120,17 @@
 								onSelect(String(movie.id));
 								reset();
 							}}
-							class="flex h-16 items-start justify-start gap-2"
+							class="flex items-start justify-start gap-2 p-2 hover:bg-slate-100"
 						>
 							<div class="w-10 flex-shrink-0">
 								{#if movie.poster_path}
 									<img
 										use:lazyLoad={`${baseImageUrl}w154${movie.poster_path}`}
 										alt={`poster image`}
-										class="h-full w-full rounded-sm"
+										class="h-full w-full rounded-sm bg-slate-200 opacity-[0.2] transition-opacity duration-300"
 									/>
 								{:else}
-									<div class="h-16 w-full bg-gray-100"></div>
+									<div class="h-16 w-full rounded-sm bg-slate-200"></div>
 								{/if}
 							</div>
 							<span class="text-left">{movie.title}</span>
