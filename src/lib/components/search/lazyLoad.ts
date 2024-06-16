@@ -11,7 +11,7 @@ export const lazyLoad = (image: HTMLImageElement, src: string) => {
 		image.style.opacity = '1'; // REPL hack to apply loading animation
 	};
 	const observer = new IntersectionObserver((entries) => {
-		if (entries[0].isIntersecting) {
+		if (entries.some((entry) => entry.isIntersecting)) {
 			image.src = src; // replace placeholder src with the image src on observe
 			if (image.complete) {
 				// check if instantly loaded
@@ -25,6 +25,7 @@ export const lazyLoad = (image: HTMLImageElement, src: string) => {
 
 	return {
 		destroy() {
+			observer.disconnect();
 			image.removeEventListener('load', loaded); // clean up the event listener
 		}
 	};

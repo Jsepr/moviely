@@ -18,7 +18,7 @@
 	let movies: SearchMovie[] = [];
 	let timeout: ReturnType<typeof setTimeout>;
 	let popoverOpen = false;
-	
+	let input: HTMLInputElement;
 
 	function handleSearch(query: string) {
 		if (!query) {
@@ -68,17 +68,25 @@
 
 <div class={`w-full`}>
 	<Popover.Root disableFocusTrap bind:open={popoverOpen}>
-		<Input
-			bind:value={query}
-			disabled={hasGuessedCorrect}
-			placeholder={hasGuessedCorrect
-				? 'You have guessed the correct movie!'
-				: "Guess today's movie..."}
+		<Popover.Trigger class="w-full" asChild let:builder>
+			<Input
+				builders={[builder]}
+				ref={input}
+				bind:value={query}
+				disabled={hasGuessedCorrect}
+				placeholder={hasGuessedCorrect
+					? 'You have guessed the correct movie!'
+					: "Guess today's movie..."}
+			>
+				<Search slot="start-icon" class="opacity-50" />
+			</Input>
+		</Popover.Trigger>
+		<Popover.Content
+			sameWidth
+			align="center"
+			sideOffset={10}
+			class="max-h-96 min-h-64 overflow-auto bg-card p-2"
 		>
-			<Search slot="start-icon" class="opacity-50" />
-		</Input>
-		<Popover.Trigger class="h-0 w-full" />
-		<Popover.Content sameWidth align="center" class="max-h-96 min-h-64 overflow-auto bg-card p-2">
 			<div class="flex flex-col gap-4">
 				{#if !query}
 					<p class="text-center">Try any movie</p>
