@@ -10,7 +10,7 @@ interface MultiStringValue {
 	id: number;
 	name: string;
 	correct: boolean;
-	
+
 	value?: never;
 	sameContinent?: never;
 }
@@ -26,7 +26,7 @@ export interface MultiStringCategory<TName extends string> {
 
 interface CountryValue {
 	id?: never;
-	
+
 	name?: string;
 	value: string;
 	correct: boolean;
@@ -45,7 +45,7 @@ export interface CountriesCategory {
 export type NumberAnswerCategory =
 	| NumberCategory<'year'>
 	| NumberCategory<'runtime'>
-	| NumberCategory<'score'>;
+	| NumberCategory<'rating'>;
 export type MultiStringAnswerCategory =
 	| MultiStringCategory<'genres'>
 	| MultiStringCategory<'directors'>

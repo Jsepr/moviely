@@ -3,7 +3,6 @@
 	import Search from '$lib/components/search/search.svelte';
 	import type { Guess, Hint } from '$lib/types/guess';
 	import { flip } from 'svelte/animate';
-	import { tick } from 'svelte';
 	import { getShareText, localStorageGetItem, localStorageSetItem } from '$lib/utils';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
@@ -31,12 +30,9 @@
 			}
 			const guess = (await res.json()) as Guess;
 
-			guesses = [...guesses, guess];
+			guesses = [guess, ...guesses];
 
 			localStorageSetItem({ key: 'moviely-guesses', value: guesses });
-
-			await tick();
-			window.scroll({ top: window.innerHeight, behavior: 'smooth' });
 
 			if (guesses.length > 0 && guesses.length % 3 === 0 && !guesses.some((g) => g.correct)) {
 				getHint();
@@ -44,12 +40,6 @@
 		} catch (error) {
 			handleError(error as Error);
 		}
-		scrollToBottom();
-	}
-
-	async function scrollToBottom() {
-		await tick();
-		window.scroll({ top: document.getElementById('main')?.scrollHeight, behavior: 'smooth' });
 	}
 
 	async function getHint() {
@@ -62,10 +52,10 @@
 			const hint = (await res.json()) as Hint;
 
 			hints = [...hints, hint];
+			localStorageSetItem({ key: 'moviely-hints', value: hints });
 		} catch (error) {
 			handleError(error as Error);
 		}
-		scrollToBottom();
 	}
 
 	function handleError(error: Error) {
@@ -80,9 +70,6 @@
 	<meta name="description" content="Movie quiz app" />
 </svelte:head>
 <section class="flex flex-1 flex-col justify-between gap-2 align-middle">
-	<div class="flex flex-shrink-0 flex-grow flex-col justify-end">
-		<Guesses bind:guesses />
-	</div>
 	<div class="flex-shrink">
 		{#if hints.length > 0}
 			<h2 class="mb-1 text-lg font-bold">Hints:</h2>
@@ -102,7 +89,7 @@
 			</div>
 		{/if}
 		{#if !hasGuessedCorrect}
-			<p class="flex justify-end text-xs text-gray-500">Guess {guesses.length + 1}</p>
+			<p class="mb-1 flex justify-end text-xs text-white">Guess {guesses.length + 1} of 10</p>
 			<Search bind:query {onSelect} hasGuessedCorrect={guesses.some((g) => g.correct)} />
 		{:else}
 			<div class="flex flex-col align-middle">
@@ -124,5 +111,8 @@
 				>
 			</div>
 		{/if}
+	</div>
+	<div class="flex flex-shrink-0 flex-grow flex-col justify-end">
+		<Guesses bind:guesses />
 	</div>
 </section>

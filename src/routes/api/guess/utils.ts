@@ -1,15 +1,15 @@
-import type { NumberCategory } from "$lib/types/guess";
+import type { NumberCategory } from '$lib/types/guess';
 
 export function getNumberAnswerCategory<TName extends string>({
 	name,
 	todaysValue,
 	guessedValue,
-  closeDiff
+	closeDiff
 }: {
 	name: TName;
 	todaysValue: number;
 	guessedValue: number;
-  closeDiff: number;
+	closeDiff: number;
 }): NumberCategory<TName> {
 	const runtimeCorrect = guessedValue === todaysValue;
 	const runtimeDiff = guessedValue - todaysValue;

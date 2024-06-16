@@ -10,11 +10,11 @@ export const ssr = false;
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
 	const storedDate = localStorageGetItem({ key: 'moviely-date' });
-  const date = format(new Date(), 'yyyy-MM-dd');
+	const date = format(new Date(), 'yyyy-MM-dd');
 
-  if (storedDate !== date) {
-    localStorageClear();
-  }
+	if (storedDate !== date) {
+		localStorageClear();
+	}
 
 	localStorageSetItem({ key: 'moviely-date', value: date });
 

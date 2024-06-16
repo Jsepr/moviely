@@ -3,7 +3,7 @@ import { todaysMovie } from '$lib/todaysMovie.js';
 import type { Hint } from '$lib/types/guess.js';
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({  url }) {
+export async function GET({ url }) {
 	const numberOfGuesses = url.searchParams.get('numberOfGuesses');
 
 	if (!numberOfGuesses)

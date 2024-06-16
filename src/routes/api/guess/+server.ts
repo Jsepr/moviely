@@ -59,12 +59,15 @@ export async function GET({ fetch, url }) {
 			};
 		});
 
-		const yearCategory = todaysMovie.release_date && guessedMovie.release_date ? getNumberAnswerCategory({
-			name: 'year',
-			todaysValue: parse(todaysMovie.release_date, 'yyyy-MM-dd', new Date()).getFullYear(),
-			guessedValue: parse(guessedMovie.release_date, 'yyyy-MM-dd', new Date()).getFullYear(),
-			closeDiff: 5
-		}) : null
+		const yearCategory =
+			todaysMovie.release_date && guessedMovie.release_date
+				? getNumberAnswerCategory({
+						name: 'year',
+						todaysValue: parse(todaysMovie.release_date, 'yyyy-MM-dd', new Date()).getFullYear(),
+						guessedValue: parse(guessedMovie.release_date, 'yyyy-MM-dd', new Date()).getFullYear(),
+						closeDiff: 5
+					})
+				: null;
 
 		const categories: AnswerCategory[] = [
 			...(yearCategory ? [yearCategory] : []),
@@ -75,8 +78,9 @@ export async function GET({ fetch, url }) {
 				closeDiff: 10
 			}),
 			getNumberAnswerCategory({
-				name: 'score',
-				todaysValue: todaysMovie.id === guessedMovie.id ? guessedMovie.vote_average : todaysMovie.vote_average,
+				name: 'rating',
+				todaysValue:
+					todaysMovie.id === guessedMovie.id ? guessedMovie.vote_average : todaysMovie.vote_average,
 				guessedValue: guessedMovie.vote_average,
 				closeDiff: 1
 			}),
