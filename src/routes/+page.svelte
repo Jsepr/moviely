@@ -17,8 +17,8 @@
 	async function onSelect(guessId: string) {
 		query = '';
 
-		if (guesses.map((g) => g.id).includes(guessId)) {
-			console.log('You have already guessed this movie');
+		if (guesses.some((g) => g.id === guessId)) {
+			toast('You have already guessed this movie');
 			return;
 		}
 
