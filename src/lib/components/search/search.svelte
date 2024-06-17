@@ -8,6 +8,7 @@
 	import { Skeleton } from '../ui/skeleton';
 	import Input from '../ui/input/input.svelte';
 	import { onMount } from 'svelte';
+	import Device from 'svelte-device-info';
 
 	type $$Props = { query: string; onSelect: (value: string) => void; hasGuessedCorrect: boolean };
 
@@ -82,7 +83,7 @@
 </script>
 
 <div class={`w-full`}>
-	<Popover.Root disableFocusTrap bind:open={popoverOpen}>
+	<Popover.Root disableFocusTrap bind:open={popoverOpen} preventScroll={Device.PointingAccuracy !== 'none'}>
 		<Popover.Trigger class="w-full" asChild role="textbox" let:builder>
 			<Input
 				ref={input}
@@ -122,7 +123,7 @@
 							}}
 							class="flex items-start justify-start gap-2 p-2 hover:bg-slate-100"
 						>
-							<div class="w-10 h-16 flex-shrink-0">
+							<div class="h-16 w-10 flex-shrink-0">
 								{#if movie.poster_path}
 									<img
 										use:lazyLoad={`${baseImageUrl}w154${movie.poster_path}`}
