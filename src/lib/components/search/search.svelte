@@ -100,6 +100,8 @@
 		<Popover.Content
 			sameWidth
 			align="center"
+			side="bottom"
+			avoidCollisions={false}
 			sideOffset={10}
 			class="h-96 overflow-auto bg-card p-0"
 		>
