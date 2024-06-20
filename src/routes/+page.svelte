@@ -59,7 +59,8 @@
 	}
 
 	function handleError(error: Error) {
-		console.log(error);
+		toast('Something went wrong');
+		console.error(error);
 	}
 
 	$: hasGuessedCorrect = guesses.some((g) => g.correct);
@@ -101,7 +102,7 @@
 					on:click={async () => {
 						try {
 							await navigator.clipboard.writeText(
-								getShareText({ guesses: guesses.reverse(), hints, date: data.date })
+								getShareText({ guesses: guesses, hints, date: data.date })
 							);
 							toast('Copied result to clipboard');
 						} catch (error) {
