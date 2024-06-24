@@ -147,6 +147,7 @@ export function getShareText({
 }) {
 	return `🎬 Moviely ${date} 🍿
 
+📅⏰⭐🏁🎭🧍🦹
 ${guesses
 	.map((g) => {
 		if (g.correct) return g.categories.map(() => '🟩').join('');
