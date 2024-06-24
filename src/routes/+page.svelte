@@ -10,7 +10,7 @@
 	let query = '';
 
 	/** @type {import('./$types').PageData} */
-	export let data;
+	export let data: { datetime: string; date: string; timezone: string };
 	let guesses: Guess[] = localStorageGetItem({ key: 'moviely-guesses' }) ?? [];
 	let hints: Hint[] = localStorageGetItem({ key: 'moviely-hints' }) ?? [];
 
@@ -23,7 +23,12 @@
 		}
 
 		try {
-			const res = await fetch(`/api/guess?guessId=${guessId}`);
+			const res = await fetch(`/api/guess?guessId=${guessId}`, {
+				headers: {
+					'client-datetime': data.datetime,
+					'client-timezone': data.timezone
+				}
+			});
 			if (!res.ok) {
 				handleError(new Error('Something went wrong'));
 				return;
@@ -44,7 +49,12 @@
 
 	async function getHint() {
 		try {
-			const res = await fetch(`/api/hint?numberOfGuesses=${guesses.length}`);
+			const res = await fetch(`/api/hint?numberOfGuesses=${guesses.length}`, {
+				headers: {
+					'client-datetime': data.datetime,
+					'client-timezone': data.timezone
+				}
+			});
 			if (!res.ok) {
 				handleError(new Error('Something went wrong'));
 				return;

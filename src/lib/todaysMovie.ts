@@ -12,4 +12,11 @@ export async function getTodaysMovie() {
 	return movie;
 }
 
+export async function getMovieForDate(date: string) {
+	const movie = await kv.get<DetailsResponse>(format(date, 'yyyy-MM-dd'));
+	if (!movie) throw new Error('No movie found for todays date');
+
+	return movie;
+}
+
 export const todaysMovie = await getTodaysMovie();

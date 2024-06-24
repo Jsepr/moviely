@@ -9,6 +9,8 @@ import {
 	type Hint,
 	type NumberAnswerCategory
 } from './types/guess';
+import { toZonedTime } from 'date-fns-tz';
+import { addMinutes, format, parse } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -167,4 +169,23 @@ Hints 🐾: ${hints.length}
 
 ${window.location.origin}
 `;
+}
+
+export function getDateFromHeaders(headers: Headers) {
+	let date = format(new Date(), 'yyyy-MM-dd');
+
+	const clientDateTime = headers.get('client-datetime');
+	const clientTimezone = headers.get('client-timezone');
+
+	// get date from client
+	if (clientDateTime && clientTimezone) {
+		const currentDateInClientTimezone = toZonedTime(new Date(), clientTimezone);
+		const parsedClientDateTime = parse(clientDateTime, 'yyyy-MM-dd HH:mm', new Date());
+
+		// 5 minutes diff is fine, otherwise use server date
+		if (parsedClientDateTime <= addMinutes(currentDateInClientTimezone, 5)) {
+			date = format(parsedClientDateTime, 'yyyy-MM-dd');
+		}
+	}
+	return date;
 }

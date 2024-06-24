@@ -4,16 +4,21 @@ import type { AnswerCategory, Guess } from '$lib/types/guess.js';
 import type { DetailsResponse } from '$lib/types/movie.js';
 import { getNumberAnswerCategory } from './utils.js';
 import clm from 'country-locale-map';
-import { todaysMovie } from '$lib/todaysMovie.js';
+import { getMovieForDate } from '$lib/todaysMovie.js';
 import { baseImageUrl } from '$lib/constants.js';
+import { getDateFromHeaders } from '$lib/utils.js';
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ fetch, url }) {
+export async function GET({ fetch, url, request: { headers } }) {
 	const apiClient = getApiClient(fetch);
 	const guessId = url.searchParams.get('guessId');
 
+	const date = getDateFromHeaders(headers);
+
 	if (!guessId)
 		return new Response(JSON.stringify({ message: 'guessId is required' }), { status: 400 });
+
+	const todaysMovie = await getMovieForDate(date);
 
 	try {
 		const res = await apiClient(`movie/${guessId}?append_to_response=credits`);

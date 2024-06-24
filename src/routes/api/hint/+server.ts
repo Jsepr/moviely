@@ -1,15 +1,20 @@
 import { baseImageUrl } from '$lib/constants.js';
-import { todaysMovie } from '$lib/todaysMovie.js';
+import { getMovieForDate } from '$lib/todaysMovie.js';
 import type { Hint } from '$lib/types/guess.js';
+import { getDateFromHeaders } from '$lib/utils.js';
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ url }) {
+export async function GET({ url, request: { headers } }) {
 	const numberOfGuesses = url.searchParams.get('numberOfGuesses');
+
+	const date = getDateFromHeaders(headers);
 
 	if (!numberOfGuesses)
 		return new Response(JSON.stringify({ message: 'numberOfGuesses is required' }), {
 			status: 400
 		});
+
+	const todaysMovie = await getMovieForDate(date);
 
 	try {
 		let hint: Hint | null = null;
