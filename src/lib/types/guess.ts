@@ -65,6 +65,12 @@ export interface Guess {
 	categories: AnswerCategory[];
 }
 
+export interface GuessResponse {
+	hint?: Hint;
+	guess: Guess;
+	correctMovie: Guess;
+}
+
 export function isYearCategory(category: AnswerCategory): category is NumberCategory<'year'> {
 	return typeof category.value === 'number';
 }

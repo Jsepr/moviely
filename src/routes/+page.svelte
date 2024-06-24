@@ -1,20 +1,29 @@
 <script lang="ts">
 	import Guesses from '$lib/components/guesses/guesses.svelte';
 	import Search from '$lib/components/search/search.svelte';
-	import type { Guess, Hint } from '$lib/types/guess';
+	import type { Guess, GuessResponse, Hint } from '$lib/types/guess';
 	import { flip } from 'svelte/animate';
 	import { getShareText, localStorageGetItem, localStorageSetItem } from '$lib/utils';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
-	import { createQuery } from '@tanstack/svelte-query';
+	import type { DetailsResponse } from '$lib/types/movie';
+	import GuessCard from '$lib/components/guesses/guess.svelte';
 
 	let searchInput = '';
 
 	/** @type {import('./$types').PageData} */
-	export let data: { datetime: string; date: string; timezone: string };
+	export let data: {
+		datetime: string;
+		guesses: Guess[];
+		hints: Hint[];
+		correctMovie?: Guess | null;
+		date: string;
+		timezone: string;
+	};
 
-	let guesses: Guess[] = localStorageGetItem({ key: 'moviely-guesses' }) ?? [];
-	let hints: Hint[] = localStorageGetItem({ key: 'moviely-hints' }) ?? [];
+	let guesses = data.guesses;
+	let hints = data.hints;
+	let correctMovie = data.correctMovie;
 
 	async function onSelect(guessId: string) {
 		searchInput = '';
@@ -28,7 +37,8 @@
 			const res = await fetch(`/api/guess?guessId=${guessId}`, {
 				headers: {
 					'client-datetime': data.datetime,
-					'client-timezone': data.timezone
+					'client-timezone': data.timezone,
+					'client-guesses': String(guesses.length + 1)
 				}
 			});
 
@@ -36,36 +46,21 @@
 				handleError(new Error('Something went wrong'));
 				return;
 			}
-			const guess = (await res.json()) as Guess;
+			const guessResponse = (await res.json()) as GuessResponse;
 
-			guesses = [guess, ...guesses];
+			guesses = [guessResponse.guess, ...guesses];
 
 			localStorageSetItem({ key: 'moviely-guesses', value: guesses });
 
-			if (guesses.length > 0 && guesses.length % 3 === 0 && !guesses.some((g) => g.correct)) {
-				getHint();
+			if (guessResponse.hint) {
+				hints = [...hints, guessResponse.hint];
+				localStorageSetItem({ key: 'moviely-hints', value: hints });
 			}
-		} catch (error) {
-			handleError(error as Error);
-		}
-	}
 
-	async function getHint() {
-		try {
-			const res = await fetch(`/api/hint?numberOfGuesses=${guesses.length}`, {
-				headers: {
-					'client-datetime': data.datetime,
-					'client-timezone': data.timezone
-				}
-			});
-			if (!res.ok) {
-				handleError(new Error('Something went wrong'));
-				return;
+			if (guessResponse.correctMovie) {
+				correctMovie = guessResponse.correctMovie;
+				localStorageSetItem({ key: 'moviely-correct-movie', value: correctMovie });
 			}
-			const hint = (await res.json()) as Hint;
-
-			hints = [...hints, hint];
-			localStorageSetItem({ key: 'moviely-hints', value: hints });
 		} catch (error) {
 			handleError(error as Error);
 		}
@@ -76,6 +71,7 @@
 		console.error(error);
 	}
 
+	$: correctMovie;
 	$: hasGuessedCorrect = guesses.some((g) => g.correct);
 </script>
 
@@ -88,7 +84,7 @@
 		{#if hints.length > 0}
 			<h2 class="mb-1 text-lg font-bold">Hints:</h2>
 			<div class="flex gap-2">
-				{#each hints.reverse() as hint (hint.value)}
+				{#each hints.slice().reverse() as hint (hint.value)}
 					<div class="mb-2 flex flex-col" animate:flip={{ duration: 300 }}>
 						{#if hint.type === 'image'}
 							<img src={hint.value} alt="hint" class="w-fit blur-lg" />
@@ -102,9 +98,15 @@
 				{/each}
 			</div>
 		{/if}
-		{#if !hasGuessedCorrect}
+		{#if !!correctMovie}
+			<div class="mb-4 mt-4 rounded-xl bg-card p-4">
+				<h2 class="mb-1 text-center">You failed to guess today's movie :( Try again tomorrow!</h2>
+				<h3 class="mb-2 text-center font-bold">Today's movie was</h3>
+				<GuessCard guess={correctMovie} />
+			</div>
+		{:else if !hasGuessedCorrect}
 			<p class="mb-1 flex justify-end text-xs text-white">Guess {guesses.length + 1} of 10</p>
-			<Search bind:searchInput {onSelect} hasGuessedCorrect={guesses.some((g) => g.correct)} />
+			<Search bind:searchInput {onSelect} disabled={hasGuessedCorrect || !!correctMovie} />
 		{:else}
 			<div class="flex flex-col align-middle">
 				<h3 class="mb-8 mt-8 text-center">

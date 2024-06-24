@@ -8,14 +8,16 @@
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import CategoryBox from './category-box.svelte';
 
-	type $$Props = { category: AnswerCategory; class?: string };
+	type $$Props = { category: AnswerCategory; isCorrectMovie: boolean; class?: string };
 
 	export let category: $$Props['category'];
+	export let isCorrectMovie: $$Props['isCorrectMovie'];
 </script>
 
 {#if isCountriesCategory(category)}
 	<CategoryBox
 		name={category.name}
+		{isCorrectMovie}
 		isCorrect={category.correct}
 		isClose={category.value.some((c) => c.correct || c.sameContinent)}
 	>
@@ -34,6 +36,7 @@
 {:else if isMultiStringCategory(category)}
 	<CategoryBox
 		name={category.name}
+		{isCorrectMovie}
 		isCorrect={category.correct}
 		isClose={category.value.some((c) => c.correct)}
 	>
@@ -48,6 +51,7 @@
 {:else}
 	<CategoryBox
 		name={category.name}
+		{isCorrectMovie}
 		isCorrect={category.correct}
 		isClose={category.proximity === 'close'}
 	>

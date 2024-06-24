@@ -85,6 +85,7 @@ type LocalStorage = {
 	'moviely-guesses': Guess[];
 	'moviely-hints': Hint[];
 	'moviely-date': string;
+	'moviely-correct-movie': Guess;
 };
 
 type LocalStorageKey = keyof LocalStorage;

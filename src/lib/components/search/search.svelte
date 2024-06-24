@@ -14,12 +14,12 @@
 	type $$Props = {
 		searchInput: string;
 		onSelect: (value: string) => void;
-		hasGuessedCorrect: boolean;
+		disabled: boolean;
 	};
 
 	export let searchInput: $$Props['searchInput'] = '';
 	export let onSelect: $$Props['onSelect'];
-	export let hasGuessedCorrect: $$Props['hasGuessedCorrect'] = false;
+	export let disabled: $$Props['disabled'] = false;
 
 	let input: HTMLInputElement;
 
@@ -102,10 +102,8 @@
 				ref={input}
 				builders={[builder]}
 				bind:value={searchInput}
-				disabled={hasGuessedCorrect}
-				placeholder={hasGuessedCorrect
-					? 'You have guessed the correct movie!'
-					: "Guess today's movie..."}
+				{disabled}
+				placeholder={"Guess today's movie..."}
 			>
 				<Search slot="start-icon" class="opacity-50" />
 			</Input>

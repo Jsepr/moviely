@@ -20,10 +20,18 @@ export async function load() {
 	}
 
 	localStorageSetItem({ key: 'moviely-date', value: date });
+	const guesses = localStorageGetItem({ key: 'moviely-guesses' }) ?? [];
+	const hints = localStorageGetItem({ key: 'moviely-hints' }) ?? [];
+	const correctMovie = localStorageGetItem({
+		key: 'moviely-correct-movie'
+	});
 
 	return {
 		datetime,
 		date,
-		timezone
+		timezone,
+		guesses,
+		hints,
+		correctMovie
 	};
 }
