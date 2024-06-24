@@ -7,7 +7,7 @@
 	export let guesses: $$Props['guesses'] = [];
 </script>
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2 my-4">
 	{#each guesses as guess (guess.id)}
 		<Guess {guess} />
 	{/each}

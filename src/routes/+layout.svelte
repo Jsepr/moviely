@@ -1,6 +1,17 @@
 <script>
+	import { browser } from '$app/environment';
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import '../app.css';
+
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				enabled: browser,
+				staleTime: 1000 * 60 * 60
+			}
+		}
+	});
 </script>
 
 <Toaster position="top-center" />
@@ -10,7 +21,9 @@
 		<img src="/logo-with-text.png" alt="Moviely logo" class="block h-auto max-h-48 w-auto" />
 	</div>
 	<main id="main" class="flex flex-1 flex-col">
-		<slot></slot>
+		<QueryClientProvider client={queryClient}>
+			<slot></slot>
+		</QueryClientProvider>
 	</main>
 </div>
 

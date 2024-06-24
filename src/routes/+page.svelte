@@ -6,16 +6,18 @@
 	import { getShareText, localStorageGetItem, localStorageSetItem } from '$lib/utils';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
+	import { createQuery } from '@tanstack/svelte-query';
 
-	let query = '';
+	let searchInput = '';
 
 	/** @type {import('./$types').PageData} */
 	export let data: { datetime: string; date: string; timezone: string };
+
 	let guesses: Guess[] = localStorageGetItem({ key: 'moviely-guesses' }) ?? [];
 	let hints: Hint[] = localStorageGetItem({ key: 'moviely-hints' }) ?? [];
 
 	async function onSelect(guessId: string) {
-		query = '';
+		searchInput = '';
 
 		if (guesses.some((g) => g.id === guessId)) {
 			toast('You have already guessed this movie');
@@ -29,6 +31,7 @@
 					'client-timezone': data.timezone
 				}
 			});
+
 			if (!res.ok) {
 				handleError(new Error('Something went wrong'));
 				return;
@@ -101,7 +104,7 @@
 		{/if}
 		{#if !hasGuessedCorrect}
 			<p class="mb-1 flex justify-end text-xs text-white">Guess {guesses.length + 1} of 10</p>
-			<Search bind:query {onSelect} hasGuessedCorrect={guesses.some((g) => g.correct)} />
+			<Search bind:searchInput {onSelect} hasGuessedCorrect={guesses.some((g) => g.correct)} />
 		{:else}
 			<div class="flex flex-col align-middle">
 				<h3 class="mb-8 mt-8 text-center">
