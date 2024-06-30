@@ -2,7 +2,11 @@
 	import { browser } from '$app/environment';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import { Toaster } from '$lib/components/ui/sonner';
+	import { inject } from '@vercel/analytics';
+
 	import '../app.css';
+
+	inject();
 
 	const queryClient = new QueryClient({
 		defaultOptions: {
