@@ -90,7 +90,7 @@
 	$: searchInput, handleSearch(searchInput);
 </script>
 
-<div class={`w-full`} transition:slide>
+<div class={`w-full`} >
 	<Popover.Root disableFocusTrap bind:open={popoverOpen}>
 		<Popover.Trigger class="w-full" asChild role="textbox" let:builder>
 			<Input
