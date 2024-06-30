@@ -9,7 +9,6 @@ import {
 	type Guess,
 	type Hint,
 	type LoadingGuess,
-	type NumberAnswerCategory
 } from './types/guess';
 import { toZonedTime } from 'date-fns-tz';
 import { addMinutes, format, parse } from 'date-fns';
@@ -65,77 +64,6 @@ export const flyAndScale = (
 		easing: cubicOut
 	};
 };
-
-function toHoursAndMinutes(totalMinutes: number) {
-	const hours = Math.floor(totalMinutes / 60);
-	const minutes = totalMinutes % 60;
-	return { hours, minutes };
-}
-
-const formatMapper = {
-	runtime: (value: number) => {
-		const { hours, minutes } = toHoursAndMinutes(value);
-		return `${hours}h ${minutes}m`;
-	}
-};
-export function formatNumberCategoryValue({ name, value }: NumberAnswerCategory): string {
-	if (!(name in formatMapper)) return String(value);
-	return formatMapper[name as keyof typeof formatMapper](value);
-}
-
-type LocalStorage = {
-	'moviely-guesses-and-hints': (Guess | Hint)[];
-	'moviely-date': string;
-	'moviely-correct-movie': Guess;
-};
-
-type LocalStorageKey = keyof LocalStorage;
-
-type LocalStorageItem<TKey extends LocalStorageKey, TValue = LocalStorage[TKey]> = {
-	key: TKey;
-	value: TValue;
-};
-export function localStorageSetItem<TKey extends LocalStorageKey>({
-	key,
-	value
-}: LocalStorageItem<TKey>) {
-	try {
-		window.localStorage.setItem(key, JSON.stringify(value));
-	} catch (error) {
-		console.error(
-			`Could not save ${key} to local-storage. Moviely will still work but won't save progress on reload.`,
-			error
-		);
-	}
-}
-
-export function localStorageGetItem<TKey extends LocalStorageKey, TValue = LocalStorage[TKey]>({
-	key
-}: {
-	key: TKey;
-}) {
-	try {
-		const item = window.localStorage.getItem(key);
-		if (!item) return null;
-		return JSON.parse(item) as TValue;
-	} catch (error) {
-		console.error(
-			`Could not get ${key} from local-storage. Moviely will still work but won't save progress on reload.`,
-			error
-		);
-	}
-}
-
-export function localStorageClear() {
-	try {
-		window.localStorage.clear();
-	} catch (error) {
-		console.error(
-			`Could not clear local-storage. You might have to clear local storage to get the latest question.`,
-			error
-		);
-	}
-}
 
 export function getShareText({
 	guesses,

@@ -1,6 +1,6 @@
 // since there's no dynamic data here, we can prerender
 
-import { localStorageClear, localStorageGetItem, localStorageSetItem } from '$lib/utils';
+import { localStorageClear, localStorageGetItem, localStorageSetItem } from '$lib/utils/localStorage';
 import { format } from 'date-fns-tz';
 
 // it so that it gets served as a static asset in production

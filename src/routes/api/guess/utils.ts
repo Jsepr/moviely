@@ -22,7 +22,7 @@ export function getNumberAnswerCategory<TName extends string>({
 		name: name,
 		value: guessedValue,
 		correct: runtimeCorrect,
-		proximity: runtimeCorrect ? undefined : Math.abs(runtimeDiff) < closeDiff ? 'close' : 'far',
+		proximity: runtimeCorrect ? undefined : Math.abs(runtimeDiff) <= closeDiff ? 'close' : 'far',
 		hint: runtimeCorrect ? undefined : runtimeDiff > 0 ? 'below' : 'above'
 	};
 }

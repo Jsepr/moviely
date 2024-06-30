@@ -10,13 +10,13 @@
 		type Hint,
 		type LoadingGuess
 	} from '$lib/types/guess';
-	import { flip } from 'svelte/animate';
-	import { getShareText, localStorageSetItem } from '$lib/utils';
+	import { getShareText } from '$lib/utils';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
 	import type { MovielySearchMovie } from '$lib/types/movie';
 	import CorrectGuess from '$lib/components/guesses/correctGuess.svelte';
 	import { slide } from 'svelte/transition';
+	import { localStorageSetItem } from '$lib/utils/localStorage';
 
 	let searchInput = '';
 
