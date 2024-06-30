@@ -63,6 +63,9 @@ const config: Config = {
 			flex: {
 				'2/3': '0.6 0.6 0%'
 			},
+			animation: {
+				'fade-in': 'fade-in 1.5s ease-in-out',
+			},
 			// that is actual animation
 			keyframes: () => ({
 				'fade-in': {

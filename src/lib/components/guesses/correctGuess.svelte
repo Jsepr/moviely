@@ -7,9 +7,7 @@
 	export let guess: $$Props['guess'];
 </script>
 
-<div
-	class={`flex  gap-4 rounded-2xl  p-4 ${guess.correct ? 'bg-correct shadow-2xl shadow-correct' : 'bg-card'}`}
->
+<div class={`flex  gap-4 rounded-2xl  bg-correct p-4 shadow-2xl shadow-correct`}>
 	<img src={guess.posterSrc} alt={`poster image`} class="h-36 w-auto rounded-xl" />
 	<div class="flex flex-col gap-2">
 		<h2 class="font-sans font-semibold">{guess.title}</h2>

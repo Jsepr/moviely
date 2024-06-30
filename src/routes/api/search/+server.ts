@@ -1,4 +1,5 @@
 import { getApiClient } from '$lib/apiClient.js';
+import { baseImageUrl } from '$lib/constants.js';
 import type { MovielySearchMovie, SearchMovieResponse } from '$lib/types/movie.js';
 
 /** @type {import('./$types').RequestHandler} */
@@ -14,7 +15,7 @@ export async function GET({ fetch, url }) {
 		const moviesResponse: MovielySearchMovie[] = movies.map(({ id, title, poster_path }) => ({
 			id,
 			title,
-			poster_path
+			posterPath: poster_path ? `${baseImageUrl}w154${poster_path}` : null
 		}));
 		return new Response(JSON.stringify(moviesResponse));
 	} catch (error) {

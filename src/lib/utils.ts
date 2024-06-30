@@ -4,9 +4,11 @@ import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import {
 	isCountriesCategory,
+	isLoadingGuess,
 	isMultiStringCategory,
 	type Guess,
 	type Hint,
+	type LoadingGuess,
 	type NumberAnswerCategory
 } from './types/guess';
 import { toZonedTime } from 'date-fns-tz';
@@ -141,14 +143,15 @@ export function getShareText({
 	hints,
 	date
 }: {
-	guesses: Guess[];
+	guesses: (Guess | LoadingGuess)[];
 	hints: Hint[];
 	date: string;
 }) {
+	const filteredGuesses = guesses.filter((g) => !isLoadingGuess(g)) as Guess[];
 	return `🎬 Moviely ${date} 🍿
 
 📅⏰⭐🌎🎭🧍🦹
-${guesses
+${filteredGuesses
 	.map((g) => {
 		if (g.correct) return g.categories.map(() => '🟩').join('');
 		return g.categories

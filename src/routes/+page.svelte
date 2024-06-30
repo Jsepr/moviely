@@ -1,20 +1,26 @@
 <script lang="ts">
 	import Guesses from '$lib/components/guesses/guesses.svelte';
 	import Search from '$lib/components/search/search.svelte';
-	import type { Guess, GuessResponse, Hint } from '$lib/types/guess';
+	import {
+		isLoadingGuess,
+		type Guess,
+		type GuessResponse,
+		type Hint,
+		type LoadingGuess
+	} from '$lib/types/guess';
 	import { flip } from 'svelte/animate';
-	import { getShareText, localStorageGetItem, localStorageSetItem } from '$lib/utils';
+	import { getShareText, localStorageSetItem } from '$lib/utils';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
-	import type { DetailsResponse } from '$lib/types/movie';
-	import GuessCard from '$lib/components/guesses/guess.svelte';
+	import type { MovielySearchMovie } from '$lib/types/movie';
+	import CorrectGuess from '$lib/components/guesses/correctGuess.svelte';
 
 	let searchInput = '';
 
 	/** @type {import('./$types').PageData} */
 	export let data: {
 		datetime: string;
-		guesses: Guess[];
+		guesses: (Guess | LoadingGuess)[];
 		hints: Hint[];
 		correctMovie?: Guess | null;
 		date: string;
@@ -25,13 +31,20 @@
 	let hints = data.hints;
 	let correctMovie = data.correctMovie;
 
-	async function onSelect(guessId: string) {
+	async function onSelect(guessedMovie: MovielySearchMovie) {
 		searchInput = '';
+		const guessId = String(guessedMovie.id);
 
 		if (guesses.some((g) => g.id === guessId)) {
 			toast('You have already guessed this movie');
 			return;
 		}
+
+		const loadingGuess = { id: guessId, title: guessedMovie.title, posterSrc: guessedMovie.posterPath, loading: true };
+		guesses = [
+			loadingGuess,
+			...guesses
+		];
 
 		try {
 			const res = await fetch(`/api/guess?guessId=${guessId}`, {
@@ -48,9 +61,9 @@
 			}
 			const guessResponse = (await res.json()) as GuessResponse;
 
-			guesses = [guessResponse.guess, ...guesses];
+			guesses = [guessResponse.guess, ...guesses.filter((g) => !isLoadingGuess(g))];
 
-			localStorageSetItem({ key: 'moviely-guesses', value: guesses });
+			localStorageSetItem({ key: 'moviely-guesses', value: guesses as Guess[] });
 
 			if (guessResponse.hint) {
 				hints = [...hints, guessResponse.hint];
@@ -72,7 +85,7 @@
 	}
 
 	$: correctMovie;
-	$: hasGuessedCorrect = guesses.some((g) => g.correct);
+	$: hasGuessedCorrect = guesses.some((g) => !isLoadingGuess(g) && g.correct);
 </script>
 
 <svelte:head>
@@ -85,7 +98,7 @@
 			<h2 class="mb-1 text-lg font-bold">Hints:</h2>
 			<div class="flex gap-2">
 				{#each hints.slice().reverse() as hint (hint.value)}
-					<div class="mb-2 flex flex-col" animate:flip={{ duration: 300 }}>
+					<div class="mb-2 flex flex-col">
 						{#if hint.type === 'image'}
 							<img src={hint.value} alt="hint" class="w-fit blur-lg" />
 						{:else}
@@ -102,7 +115,7 @@
 			<div class="mb-4 mt-4 rounded-xl bg-card p-4">
 				<h2 class="mb-1 text-center">You failed to guess today's movie :( Try again tomorrow!</h2>
 				<h3 class="mb-2 text-center font-bold">Today's movie was</h3>
-				<GuessCard guess={correctMovie} />
+				<CorrectGuess guess={correctMovie} />
 			</div>
 		{:else if !hasGuessedCorrect}
 			<p class="mb-1 flex justify-end text-xs text-white">Guess {guesses.length + 1} of 10</p>

@@ -60,9 +60,19 @@ export interface Hint {
 export interface Guess {
 	id: string;
 	title: string;
-	posterSrc: string;
+	posterSrc: string | null;
 	correct: boolean;
 	categories: AnswerCategory[];
+
+	loading?: never;
+}
+
+export interface LoadingGuess {
+	id: string;
+	title: string;
+	posterSrc: string | null;
+
+	loading: boolean;
 }
 
 export interface GuessResponse {
@@ -83,4 +93,8 @@ export function isMultiStringCategory(
 
 export function isCountriesCategory(category: AnswerCategory): category is CountriesCategory {
 	return category.name === 'countries';
+}
+
+export function isLoadingGuess(guess: Guess | LoadingGuess): guess is LoadingGuess {
+	return !!guess.loading;
 }

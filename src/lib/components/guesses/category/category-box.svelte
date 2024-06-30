@@ -8,7 +8,7 @@
 </script>
 
 <div
-	class={`flex gap-2 p-2 ${isCorrectMovie ? 'border-black' : isCorrect ? 'border-correct' : isClose ? 'border-close' : 'border-black'} rounded-lg border-2 border-solid `}
+	class={`flex gap-2 p-2 ${isCorrectMovie ? 'border-black' : isCorrect ? 'border-correct' : isClose ? 'border-close' : 'border-black'} animate-fade-in rounded-lg border-2 border-solid`}
 >
 	<span class="font-bold capitalize">{name}:</span>
 

@@ -3,7 +3,6 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import Search from 'lucide-svelte/icons/search';
 
-	import { baseImageUrl } from '$lib/constants';
 	import { lazyLoad } from './lazyLoad';
 	import { Skeleton } from '../ui/skeleton';
 	import Input from '../ui/input/input.svelte';
@@ -13,7 +12,7 @@
 
 	type $$Props = {
 		searchInput: string;
-		onSelect: (value: string) => void;
+		onSelect: (value: MovielySearchMovie) => void;
 		disabled: boolean;
 	};
 
@@ -131,15 +130,15 @@
 						<button
 							type="button"
 							on:click={() => {
-								onSelect(String(movie.id));
+								onSelect(movie);
 								reset();
 							}}
 							class="flex items-start justify-start gap-2 p-2 hover:bg-slate-100"
 						>
 							<div class="h-16 w-10 flex-shrink-0">
-								{#if movie.poster_path}
+								{#if movie.posterPath}
 									<img
-										use:lazyLoad={`${baseImageUrl}w154${movie.poster_path}`}
+										use:lazyLoad={movie.posterPath}
 										alt={`poster image`}
 										class="h-full w-full rounded-sm bg-slate-200 opacity-[0.2] transition-opacity duration-300"
 									/>

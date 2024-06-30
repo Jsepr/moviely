@@ -15,7 +15,7 @@ export interface SearchMovieResponse {
 export interface MovielySearchMovie {
 	id: number;
 	title: string;
-	poster_path: string;
+	posterPath: string | null;
 }
 
 interface CreditPerson {
