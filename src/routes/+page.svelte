@@ -126,12 +126,12 @@
 			</div>
 		{:else if !hasGuessedCorrect}
 			<p class="mb-2 flex justify-end text-xs text-white">
-				Guess {numberOfGuesses} of 10
+				Guess {numberOfGuesses + 1} of 10
 			</p>
 			<Search bind:searchInput {onSelect} disabled={hasGuessedCorrect || !!correctMovie} />
 		{:else}
 			<h3 class="mb-2 text-center">
-				You guessed the correct movie in {guessesAndHints.length} guesses!
+				You guessed the correct movie in {numberOfGuesses} guesses!
 			</h3>
 		{/if}
 	</div>
