@@ -7,6 +7,7 @@
 	import { formatNumberCategoryValue } from '$lib/utils';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import CategoryBox from './category-box.svelte';
+	import Flag from './flag.svelte';
 
 	type $$Props = { category: AnswerCategory; isCorrectMovie: boolean; class?: string };
 
@@ -15,21 +16,11 @@
 </script>
 
 {#if isCountriesCategory(category)}
-	<CategoryBox
-		name={category.name}
-		{isCorrectMovie}
-		isCorrect={category.correct}
-		isClose={category.value.some((c) => c.correct || c.sameContinent)}
-	>
+	{@const isClose = category.value.some((c) => c.correct || c.sameContinent)}
+	<CategoryBox name={category.name} {isCorrectMovie} isCorrect={category.correct} {isClose}>
 		<div class="flex flex-wrap gap-2">
 			{#each category.value as country}
-				<div class={`flex rounded-sm align-middle ${country.correct && !isCorrectMovie ? 'bg-correct' : ''} p-2`}>
-					<img
-						src={`https://flagcdn.com/${country.value.toLowerCase()}.svg`}
-						width="40"
-						alt={country.name ?? country.value}
-					/>
-				</div>
+				<Flag {country} {isCorrectMovie} />
 			{/each}
 		</div>
 	</CategoryBox>
@@ -42,7 +33,9 @@
 	>
 		<div class={`flex flex-wrap gap-2`}>
 			{#each category.value as genre}
-				<div class={`min-w-0 rounded-sm ${genre.correct && !isCorrectMovie ? 'bg-correct' : ''} px-1`}>
+				<div
+					class={`min-w-0 rounded-sm ${genre.correct && !isCorrectMovie ? 'bg-correct' : ''} px-1`}
+				>
 					{genre.name}
 				</div>
 			{/each}

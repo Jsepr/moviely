@@ -24,7 +24,7 @@ export interface MultiStringCategory<TName extends string> {
 	proximity?: never;
 }
 
-interface CountryValue {
+export interface CountryValue {
 	id?: never;
 
 	name?: string;
