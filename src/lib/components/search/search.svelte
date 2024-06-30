@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { MovielySearchMovie, SearchMovie } from '$lib/types/movie';
+	import type { MovielySearchMovie } from '$lib/types/movie';
 	import * as Popover from '$lib/components/ui/popover';
 	import Search from 'lucide-svelte/icons/search';
 
@@ -7,8 +7,8 @@
 	import { Skeleton } from '../ui/skeleton';
 	import Input from '../ui/input/input.svelte';
 	import { onMount } from 'svelte';
-	import Device from 'svelte-device-info';
 	import { createQuery } from '@tanstack/svelte-query';
+	import { slide } from 'svelte/transition';
 
 	type $$Props = {
 		searchInput: string;
@@ -90,12 +90,8 @@
 	$: searchInput, handleSearch(searchInput);
 </script>
 
-<div class={`w-full`}>
-	<Popover.Root
-		disableFocusTrap
-		bind:open={popoverOpen}
-		preventScroll={Device.PointingAccuracy !== 'none'}
-	>
+<div class={`w-full`} transition:slide>
+	<Popover.Root disableFocusTrap bind:open={popoverOpen}>
 		<Popover.Trigger class="w-full" asChild role="textbox" let:builder>
 			<Input
 				ref={input}
@@ -118,7 +114,7 @@
 			<div class="flex flex-col gap-2">
 				{#if !searchInput}
 					<p class="text-center">Enter a movie title to search</p>
-				{:else if $searchResults.isLoading}
+				{:else if $searchResults.isLoading || (searchInput && !query)}
 					{#each Array(6).fill(0) as _}
 						<div class="flex items-start gap-2 p-2">
 							<Skeleton class="h-16 w-10 flex-shrink rounded-sm" />

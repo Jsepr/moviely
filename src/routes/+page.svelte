@@ -2,6 +2,8 @@
 	import Guesses from '$lib/components/guesses/guesses.svelte';
 	import Search from '$lib/components/search/search.svelte';
 	import {
+		isGuess,
+		isHint,
 		isLoadingGuess,
 		type Guess,
 		type GuessResponse,
@@ -14,44 +16,48 @@
 	import { toast } from 'svelte-sonner';
 	import type { MovielySearchMovie } from '$lib/types/movie';
 	import CorrectGuess from '$lib/components/guesses/correctGuess.svelte';
+	import { slide } from 'svelte/transition';
 
 	let searchInput = '';
 
 	/** @type {import('./$types').PageData} */
 	export let data: {
 		datetime: string;
-		guesses: (Guess | LoadingGuess)[];
-		hints: Hint[];
+		guessesAndHints: (Guess | LoadingGuess | Hint)[];
 		correctMovie?: Guess | null;
 		date: string;
 		timezone: string;
 	};
 
-	let guesses = data.guesses;
-	let hints = data.hints;
+	let guessesAndHints = data.guessesAndHints;
+	$: guesses = guessesAndHints.filter((g) => isGuess(g));
+	$: numberOfGuesses = guesses.length;
+	$: hints = guessesAndHints.filter((g) => isHint(g));
 	let correctMovie = data.correctMovie;
 
 	async function onSelect(guessedMovie: MovielySearchMovie) {
 		searchInput = '';
 		const guessId = String(guessedMovie.id);
 
-		if (guesses.some((g) => g.id === guessId)) {
+		if (guessesAndHints.some((g) => g.id === guessId)) {
 			toast('You have already guessed this movie');
 			return;
 		}
 
-		const loadingGuess = { id: guessId, title: guessedMovie.title, posterSrc: guessedMovie.posterPath, loading: true };
-		guesses = [
-			loadingGuess,
-			...guesses
-		];
+		const loadingGuess = {
+			id: guessId,
+			title: guessedMovie.title,
+			posterSrc: guessedMovie.posterPath,
+			loading: true
+		};
+		guessesAndHints = [loadingGuess, ...guessesAndHints];
 
 		try {
 			const res = await fetch(`/api/guess?guessId=${guessId}`, {
 				headers: {
 					'client-datetime': data.datetime,
 					'client-timezone': data.timezone,
-					'client-guesses': String(guesses.length + 1)
+					'client-guesses': String(numberOfGuesses + 1)
 				}
 			});
 
@@ -61,14 +67,16 @@
 			}
 			const guessResponse = (await res.json()) as GuessResponse;
 
-			guesses = [guessResponse.guess, ...guesses.filter((g) => !isLoadingGuess(g))];
-
-			localStorageSetItem({ key: 'moviely-guesses', value: guesses as Guess[] });
+			guessesAndHints = [guessResponse.guess, ...guessesAndHints.filter((g) => !isLoadingGuess(g))];
 
 			if (guessResponse.hint) {
-				hints = [...hints, guessResponse.hint];
-				localStorageSetItem({ key: 'moviely-hints', value: hints });
+				guessesAndHints = [guessResponse.hint, ...guessesAndHints];
 			}
+
+			localStorageSetItem({
+				key: 'moviely-guesses-and-hints',
+				value: guessesAndHints.filter((g) => isGuess(g) || isHint(g))
+			});
 
 			if (guessResponse.correctMovie) {
 				correctMovie = guessResponse.correctMovie;
@@ -85,7 +93,7 @@
 	}
 
 	$: correctMovie;
-	$: hasGuessedCorrect = guesses.some((g) => !isLoadingGuess(g) && g.correct);
+	$: hasGuessedCorrect = guessesAndHints.some((g) => isGuess(g) && g.correct);
 </script>
 
 <svelte:head>
@@ -93,55 +101,41 @@
 	<meta name="description" content="Movie quiz app" />
 </svelte:head>
 <section class="flex flex-1 flex-col justify-between gap-2 align-middle">
-	<div class="flex-shrink">
-		{#if hints.length > 0}
-			<h2 class="mb-1 text-lg font-bold">Hints:</h2>
-			<div class="flex gap-2">
-				{#each hints.slice().reverse() as hint (hint.value)}
-					<div class="mb-2 flex flex-col">
-						{#if hint.type === 'image'}
-							<img src={hint.value} alt="hint" class="w-fit blur-lg" />
-						{:else}
-							<div class=" rounded-md bg-white p-4">
-								<span class="capitalize">{hint.type}</span>:
-								<span class="italic">{hint.value}</span>
-							</div>
-						{/if}
-					</div>
-				{/each}
-			</div>
+	<div class="flex flex-shrink flex-col justify-center" transition:slide>
+		{#if !!correctMovie || hasGuessedCorrect}
+			<Button
+				class="m-auto mb-4"
+				on:click={async () => {
+					try {
+						await navigator.clipboard.writeText(
+							getShareText({ guesses: guesses.slice().reverse(), hints, date: data.date })
+						);
+						toast('Copied result to clipboard');
+					} catch (error) {
+						toast('Could not copy result');
+					}
+				}}>Share your result!</Button
+			>
 		{/if}
+
 		{#if !!correctMovie}
-			<div class="mb-4 mt-4 rounded-xl bg-card p-4">
+			<div class="mb-4 mt-4 rounded-xl bg-red-300 p-4">
 				<h2 class="mb-1 text-center">You failed to guess today's movie :( Try again tomorrow!</h2>
 				<h3 class="mb-2 text-center font-bold">Today's movie was</h3>
 				<CorrectGuess guess={correctMovie} />
 			</div>
 		{:else if !hasGuessedCorrect}
-			<p class="mb-1 flex justify-end text-xs text-white">Guess {guesses.length + 1} of 10</p>
+			<p class="mb-2 flex justify-end text-xs text-white">
+				Guess {numberOfGuesses} of 10
+			</p>
 			<Search bind:searchInput {onSelect} disabled={hasGuessedCorrect || !!correctMovie} />
 		{:else}
-			<div class="flex flex-col align-middle">
-				<h3 class="mb-8 mt-8 text-center">
-					You guessed the correct movie in {guesses.length} guesses!
-				</h3>
-				<Button
-					class="m-auto mb-16"
-					on:click={async () => {
-						try {
-							await navigator.clipboard.writeText(
-								getShareText({ guesses: guesses.slice().reverse(), hints, date: data.date })
-							);
-							toast('Copied result to clipboard');
-						} catch (error) {
-							toast('Could not copy result');
-						}
-					}}>Share your result!</Button
-				>
-			</div>
+			<h3 class="mb-2 text-center">
+				You guessed the correct movie in {guessesAndHints.length} guesses!
+			</h3>
 		{/if}
 	</div>
 	<div class="flex flex-shrink-0 flex-grow flex-col justify-end">
-		<Guesses bind:guesses />
+		<Guesses bind:guessesAndHints />
 	</div>
 </section>

@@ -23,7 +23,7 @@
 	>
 		<div class="flex flex-wrap gap-2">
 			{#each category.value as country}
-				<div class={`flex rounded-sm align-middle ${country.correct ? 'bg-correct' : ''} p-2`}>
+				<div class={`flex rounded-sm align-middle ${country.correct && !isCorrectMovie ? 'bg-correct' : ''} p-2`}>
 					<img
 						src={`https://flagcdn.com/${country.value.toLowerCase()}.svg`}
 						width="40"
@@ -42,7 +42,7 @@
 	>
 		<div class={`flex flex-wrap gap-2`}>
 			{#each category.value as genre}
-				<div class={`min-w-0 rounded-sm ${genre.correct ? 'bg-correct' : ''} px-1`}>
+				<div class={`min-w-0 rounded-sm ${genre.correct && !isCorrectMovie ? 'bg-correct' : ''} px-1`}>
 					{genre.name}
 				</div>
 			{/each}
@@ -56,7 +56,7 @@
 		isClose={category.proximity === 'close'}
 	>
 		{formatNumberCategoryValue(category)}
-		{#if category.correct}
+		{#if category.correct && !isCorrectMovie}
 			<Check class="text-green-600" />
 		{/if}
 		{#if category.hint === 'above'}

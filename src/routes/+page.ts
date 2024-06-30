@@ -20,8 +20,7 @@ export async function load() {
 	}
 
 	localStorageSetItem({ key: 'moviely-date', value: date });
-	const guesses = localStorageGetItem({ key: 'moviely-guesses' }) ?? [];
-	const hints = localStorageGetItem({ key: 'moviely-hints' }) ?? [];
+	const guessesAndHints = localStorageGetItem({ key: 'moviely-guesses-and-hints' }) ?? [];
 	const correctMovie = localStorageGetItem({
 		key: 'moviely-correct-movie'
 	});
@@ -30,8 +29,7 @@ export async function load() {
 		datetime,
 		date,
 		timezone,
-		guesses,
-		hints,
+		guessesAndHints,
 		correctMovie
 	};
 }

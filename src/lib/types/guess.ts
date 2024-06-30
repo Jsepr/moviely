@@ -54,8 +54,11 @@ export type MultiStringAnswerCategory =
 export type AnswerCategory = NumberAnswerCategory | MultiStringAnswerCategory | CountriesCategory;
 
 export interface Hint {
+	id: string;
 	type: 'tagline' | 'quote' | 'image';
 	value: string;
+
+	loading?: never;
 }
 export interface Guess {
 	id: string;
@@ -65,6 +68,7 @@ export interface Guess {
 	categories: AnswerCategory[];
 
 	loading?: never;
+	type?: never;
 }
 
 export interface LoadingGuess {
@@ -73,6 +77,8 @@ export interface LoadingGuess {
 	posterSrc: string | null;
 
 	loading: boolean;
+
+	type?: never;
 }
 
 export interface GuessResponse {
@@ -95,6 +101,16 @@ export function isCountriesCategory(category: AnswerCategory): category is Count
 	return category.name === 'countries';
 }
 
-export function isLoadingGuess(guess: Guess | LoadingGuess): guess is LoadingGuess {
-	return !!guess.loading;
+export function isGuess(guessOrHint: Guess | LoadingGuess | Hint): guessOrHint is Guess {
+	return !guessOrHint.type && !guessOrHint.loading;
+}
+
+export function isLoadingGuess(
+	guessOrHint: Guess | LoadingGuess | Hint
+): guessOrHint is LoadingGuess {
+	return !!guessOrHint.loading;
+}
+
+export function isHint(guessOrHint: Guess | LoadingGuess | Hint): guessOrHint is Hint {
+	return !!guessOrHint.type;
 }

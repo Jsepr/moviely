@@ -84,8 +84,7 @@ export function formatNumberCategoryValue({ name, value }: NumberAnswerCategory)
 }
 
 type LocalStorage = {
-	'moviely-guesses': Guess[];
-	'moviely-hints': Hint[];
+	'moviely-guesses-and-hints': (Guess | Hint)[];
 	'moviely-date': string;
 	'moviely-correct-movie': Guess;
 };

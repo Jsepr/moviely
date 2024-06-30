@@ -37,11 +37,13 @@ export function getHint({
 	let hint: Hint | null = null;
 	if (numberOfGuesses === '3') {
 		hint = {
+			id: 'hint-1',
 			type: 'tagline',
 			value: todaysMovie.tagline ?? "This movie doesn't have a tagline :("
 		};
 	} else if (numberOfGuesses === '6') {
 		hint = {
+			id: 'hint-2',
 			type: 'image',
 			value: `${baseImageUrl}w154${todaysMovie.poster_path}`
 		};
@@ -152,7 +154,7 @@ export function getGuess({
 	const guess: Guess = {
 		id: guessId,
 		title: guessedMovie.title,
-		posterSrc: `${baseImageUrl}w154${guessedMovie.poster_path}`,
+		posterSrc: guessedMovie.poster_path ? `${baseImageUrl}w154${guessedMovie.poster_path}` : null,
 		correct: guessedMovie.id === todaysMovie.id,
 		categories
 	};
